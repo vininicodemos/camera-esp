@@ -20,6 +20,19 @@ def get_foto():
         return Response(ultima_foto, mimetype='image/jpeg')
     return "Nenhuma foto ainda", 404
 
+# --- NOVA ROTA EXCLUSIVA PARA O WIDGET DO BLYNK ---
+@app.route('/blynk_stream')
+def blynk_stream():
+    def generate():
+        while True:
+            if ultima_foto:
+                # O formato exato (multipart) que o Blynk exige para renderizar vídeo
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + ultima_foto + b'\r\n')
+            time.sleep(0.05) # Pausa de 50ms (20 frames por segundo)
+            
+    return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 # Rota 3: A página principal que você vai acessar do seu celular (O painel TRACC)
 @app.route('/')
 def index():
