@@ -40,7 +40,7 @@ def index():
     html = """
     <!DOCTYPE html><html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'></head>
     <body style='text-align:center; background-color:#1e1e1e; color:white; font-family:sans-serif;'>
-    <h2>TRACC - Conexao Global</h2>
+    <h2>Conexao Global</h2>
     
     <img id='cam' src='/foto' style='width:100%; max-width:640px; border: 2px solid #4CAF50; border-radius: 10px;' onload='refresh()' onerror='refresh()' />
     
