@@ -3,38 +3,37 @@ import time
 
 app = Flask(__name__)
 
-# Variável global que vai guardar a última foto recebida do robô na memória RAM da nuvem
 ultima_foto = None
 
-# Rota 1: Onde o ESP32-CAM vai arremessar a foto (Método POST)
 @app.route('/upload', methods=['POST'])
 def upload():
     global ultima_foto
-    ultima_foto = request.data  # Salva os bytes crus do JPEG
+    ultima_foto = request.data  
     return "Foto recebida", 200
 
-# Rota 2: Onde o site pega a foto crua
 @app.route('/foto')
 def get_foto():
     global ultima_foto
     if ultima_foto:
-        return Response(ultima_foto, mimetype='image/jpeg')
+        response = Response(ultima_foto, mimetype='image/jpeg')
+        # A MÁGICA AQUI: Obriga os roteadores e operadoras a não fazerem cache (atraso)
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
     return "Nenhuma foto ainda", 404
 
-# --- NOVA ROTA EXCLUSIVA PARA O WIDGET DO BLYNK ---
 @app.route('/blynk_stream')
 def blynk_stream():
     def generate():
         while True:
             if ultima_foto:
-                # O formato exato (multipart) que o Blynk exige para renderizar vídeo
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + ultima_foto + b'\r\n')
-            time.sleep(0.03) # Pausa de 50ms (20 frames por segundo)
+            time.sleep(0.03) 
             
     return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-# Rota 3: A página principal que você vai acessar do seu celular (O painel TRACC)
 @app.route('/')
 def index():
     html = """
@@ -48,7 +47,7 @@ def index():
     function refresh() {
       setTimeout(function() {
         document.getElementById('cam').src = '/foto?' + Math.random();
-      }, 30); // Puxa a nova foto da nuvem a cada 50 milissegundos
+      }, 30); 
     }
     </script>
     </body></html>
@@ -56,5 +55,4 @@ def index():
     return html
 
 if __name__ == '__main__':
-    # Roda o servidor na porta 5000
     app.run(host='0.0.0.0', port=5000)
