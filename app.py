@@ -30,7 +30,7 @@ def blynk_stream():
                 # O formato exato (multipart) que o Blynk exige para renderizar vídeo
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + ultima_foto + b'\r\n')
-            time.sleep(0.05) # Pausa de 50ms (20 frames por segundo)
+            time.sleep(0.03) # Pausa de 50ms (20 frames por segundo)
             
     return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
@@ -48,7 +48,7 @@ def index():
     function refresh() {
       setTimeout(function() {
         document.getElementById('cam').src = '/foto?' + Math.random();
-      }, 50); // Puxa a nova foto da nuvem a cada 50 milissegundos
+      }, 30); // Puxa a nova foto da nuvem a cada 50 milissegundos
     }
     </script>
     </body></html>
