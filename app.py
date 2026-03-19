@@ -31,10 +31,11 @@ def index():
     <script>
     const cam = document.getElementById('cam');
     
-    // A MÁGICA ANTI-TRAVAMENTO: O navegador puxa as fotos como uma corrente.
-    // Uma foto só é pedida QUANDO a anterior terminar de ser pintada na tela.
+    // A MÁGICA PARA O CELULAR: Dá um micro-descanso de 30ms para o processador respirar
     cam.onload = function() {
-        cam.src = '/foto?' + new Date().getTime();
+        setTimeout(function() {
+            cam.src = '/foto?' + new Date().getTime();
+        }, 30);
     };
     
     // Se der algum erro (ex: Render demorar a responder), ele tenta de novo em meio segundo
